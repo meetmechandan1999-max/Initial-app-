@@ -1,1 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aryan App</title>
 
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:Arial,sans-serif;
+  background:linear-gradient(135deg,#101828,#182848);
+  color:white;
+  min-height:100vh;
+}
+header{
+  padding:25px 20px;
+  text-align:center;
+  background:rgba(255,255,255,.08);
+  backdrop-filter:blur(10px);
+}
+header h1{font-size:30px}
+header p{opacity:.7;margin-top:6px}
+
+.container{
+  max-width:900px;
+  margin:auto;
+  padding:20px;
+}
+
+.card{
+  background:rgba(255,255,255,.09);
+  border:1px solid rgba(255,255,255,.15);
+  border-radius:20px;
+  padding:20px;
+  margin-bottom:18px;
+  box-shadow:0 10px 30px rgba(0,0,0,.25);
+}
+
+.card h2{margin-bottom:12px}
+
+input,textarea{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:12px;
+  margin:7px 0;
+  font-size:16px;
+  outline:none;
+}
+
+textarea{height:130px;resize:vertical}
+
+button{
+  border:0;
+  border-radius:12px;
+  padding:13px 18px;
+  margin:6px 3px;
+  font-size:15px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.save{background:#22c55e;color:white}
+.delete{background:#ef4444;color:white}
+.blue{background:#3b82f6;color:white}
+
+.note{
+  background:rgba(0,0,0,.2);
+  padding:14px;
+  border-radius:12px;
+  margin-top:10px;
+  white-space:pre-wrap;
+}
+
+.fileBox{
+  border:2px dashed rgba(255,255,255,.3);
+  border-radius:15px;
+  padding:20px;
+  text-align:center;
+}
+
+#status{
+  text-align:center;
+  margin:15px;
+  color:#86efac;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>⚡ Aryan</h1>
+  <p>My Personal Dashboard</p>
+</header>
+
+<div class="container">
+
+  <div class="card">
+    <h2>📝 My Notes</h2>
+
+    <input id="noteTitle" placeholder="Note title">
+    <textarea id="noteText" placeholder="Write your note here..."></textarea>
+
+    <button class="save" onclick="saveNote()">💾 Save Note</button>
+    <button class="delete" onclick="clearNote()">🗑️ Clear</button>
+
+    <div id="savedNote"></div>
+  </div>
+
+  <div class="card">
+    <h2>📁 My Files</h2>
+
+    <div class="fileBox">
+      <input type="file" id="fileInput">
+      <button class="blue" onclick="saveFile()">📤 Save File</button>
+      <p id="fileStatus"></p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🔐 Quick Access</h2>
+    <button class="blue" onclick="showMessage('Welcome back, Aryan! 👋')">
+      👋 Welcome
+    </button>
+    <button class="blue" onclick="showMessage('Your app is working perfectly! ✅')">
+      ⚙️ App Status
+    </button>
+  </div>
+
+  <div id="status"></div>
+
+</div>
+
+<script>
+
+function saveNote(){
+
+  const title=document.getElementById("noteTitle").value;
+  const text=document.getElementById("noteText").value;
+
+  if(!title && !text){
+    alert("Please write something first.");
+    return;
+  }
+
+  localStorage.setItem("aryan_title",title);
+  localStorage.setItem("aryan_note",text);
+
+  displayNote();
+  showMessage("Note saved successfully ✅");
+}
+
+function displayNote(){
+
+  const title=localStorage.getItem("aryan_title");
+  const text=localStorage.getItem("aryan_note");
+
+  if(title || text){
+
+    document.getElementById("savedNote").innerHTML=
+    `<div class="note">
+      <b>${escapeHTML(title || "My Note")}</b><br><br>
+      ${escapeHTML(text || "")}
+    </div>`;
+  }
+}
+
+function clearNote(){
+
+  localStorage.removeItem("aryan_title");
+  localStorage.removeItem("aryan_note");
+
+  document.getElementById("noteTitle").value="";
+  document.getElementById("noteText").value="";
+  document.getElementById("savedNote").innerHTML="";
+
+  showMessage("Note cleared 🗑️");
+}
+
+function saveFile(){
+
+  const file=document.getElementById("fileInput").files[0];
+
+  if(!file){
+    alert("Please select a file first.");
+    return;
+  }
+
+  localStorage.setItem("aryan_file_name",file.name);
+
+  document.getElementById("fileStatus").innerHTML=
+  "✅ Selected: "+escapeHTML(file.name);
+
+  showMessage("File selected successfully 📁");
+}
+
+function showMessage(message){
+
+  document.getElementById("status").innerText=message;
+
+  setTimeout(()=>{
+    document.getElementById("status").innerText="";
+  },2500);
+}
+
+function escapeHTML(str){
+
+  return String(str)
+  .replace(/&/g,"&amp;")
+  .replace(/</g,"&lt;")
+  .replace(/>/g,"&gt;")
+  .replace(/"/g,"&quot;")
+  .replace(/'/g,"&#039;");
+}
+
+window.onload=function(){
+
+  const title=localStorage.getItem("aryan_title");
+  const note=localStorage.getItem("aryan_note");
+
+  if(title) document.getElementById("noteTitle").value=title;
+  if(note) document.getElementById("noteText").value=note;
+
+  displayNote();
+};
+
+</script>
+
+</body>
+  </html>
