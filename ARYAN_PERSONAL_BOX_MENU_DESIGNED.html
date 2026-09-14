@@ -1,0 +1,201 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><title>ARYAN Personal Box</title>
+<style>
+:root{--bg:#020711;--p:#071629;--p2:#0a1d34;--b:#12a9ff;--b2:#006cff;--t:#eaf8ff;--m:#789ab8;--pink:#a849ff}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% -15%,#073e70,#020711 45%,#01040a);color:var(--t);font-family:system-ui,-apple-system,Segoe UI,sans-serif}.app{max-width:760px;margin:auto;min-height:100vh;padding-bottom:82px}.screen{display:none;min-height:100vh}.screen.active{display:block}.top{padding:18px 18px 12px;position:sticky;top:0;z-index:5;background:#020711e8;backdrop-filter:blur(15px);border-bottom:1px solid #10476c}.brand{font-weight:950;font-size:29px;letter-spacing:4px;text-shadow:0 0 9px #1ab2ff,0 0 22px #0077ff}.sub{font-size:11px;color:#55c8ff;letter-spacing:1.5px}.hero{margin:16px 16px 18px;padding:20px;border:1px solid #1489d5;border-radius:20px;background:linear-gradient(130deg,#0b2d4d,#071326 65%);box-shadow:0 0 24px #008cff22}.hero h1{margin:2px 0 5px;font-size:25px}.hero p{margin:0;color:#a8c5db;font-size:13px}.hero .cloud{margin-top:14px;color:#58caff;font-size:12px}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:0 16px}.card{min-height:118px;border:1px solid #114d77;border-radius:18px;background:linear-gradient(145deg,#0b1d32,#050d18);padding:15px;box-shadow:0 8px 22px #0009;cursor:pointer}.card:active{transform:scale(.98);border-color:#1ab2ff}.icon{font-size:31px;filter:drop-shadow(0 0 8px #16aaff66)}.name{font-weight:850;margin-top:10px}.count{font-size:11px;color:var(--m);margin-top:4px}.title{font-size:24px;font-weight:900;margin:18px 16px 12px}.back{margin:15px 16px 0;background:none;border:0;color:#55c8ff;font-weight:800;font-size:14px}.search{margin:0 16px 12px;width:calc(100% - 32px);padding:12px;border-radius:13px;border:1px solid #144d75;background:#061322;color:white;outline:none}.row{margin:10px 16px;padding:13px;border:1px solid #123f60;border-radius:15px;background:#071628;display:flex;align-items:center;gap:12px}.row .grow{flex:1}.small{font-size:11px;color:var(--m)}button.action{border:1px solid #17618e;background:#08203a;color:white;border-radius:11px;padding:10px 12px;font-weight:750}.primary{background:linear-gradient(90deg,#0569c4,#008dff)!important;border-color:#18b2ff!important}.photoGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:0 16px}.photo{border:1px solid #12476c;border-radius:14px;overflow:hidden;background:#061322}.photo img{width:100%;height:145px;object-fit:cover;display:block}.photo div{padding:8px;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.gameGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:0 16px}.game{height:145px;border:1px solid #164e76;border-radius:17px;padding:13px;background:linear-gradient(145deg,#102a45,#050d18);display:flex;flex-direction:column;justify-content:end}.game b{font-size:16px}.player{margin:16px;padding:18px;border:1px solid #14527d;border-radius:20px;background:#061424;box-shadow:0 0 25px #008cff22}.cover{height:230px;border-radius:15px;background:linear-gradient(135deg,#062d50,#101b38,#042e53);display:grid;place-items:center;font-size:65px}.bar{height:5px;background:#17344d;border-radius:10px;margin:18px 0}.bar i{display:block;width:35%;height:100%;background:#19aaff;border-radius:10px}.controls{display:flex;justify-content:center;gap:15px}.controls button{width:48px;height:48px;border-radius:50%;border:1px solid #1b74a5;background:#071c31;color:white;font-size:18px}.controls .play{background:#008cff;box-shadow:0 0 18px #008cff66}.profile{margin:18px 16px}.avatar{width:74px;height:74px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#087cff,#15b9ff);font-size:35px;box-shadow:0 0 25px #008cff66;margin-bottom:12px}.setting{padding:15px;border:1px solid #123e60;border-radius:15px;background:#071628;margin:10px 0;display:flex;justify-content:space-between}.nav{position:fixed;bottom:10px;left:50%;transform:translateX(-50%);width:min(94%,540px);z-index:20;display:flex;padding:7px;border:1px solid #15537d;border-radius:19px;background:#051322ed;backdrop-filter:blur(15px);box-shadow:0 0 30px #008cff25}.nav button{flex:1;background:none;border:0;color:#6389a5;padding:9px 5px;border-radius:13px;font-size:11px;font-weight:800}.nav button.active{color:white;background:linear-gradient(135deg,#075ca4,#0087ff);box-shadow:0 0 15px #008cff55}.fab{position:fixed;right:22px;bottom:91px;width:52px;height:52px;border:1px solid #19b2ff;border-radius:50%;background:#087fe0;color:white;font-size:26px;box-shadow:0 0 22px #008cff66}.empty{padding:45px 20px;text-align:center;color:#6689a5}.toast{position:fixed;left:50%;bottom:150px;transform:translateX(-50%);background:#08213a;border:1px solid #168bd0;border-radius:12px;padding:10px 14px;font-size:12px;display:none}.toast.show{display:block}@media(min-width:650px){.grid,.photoGrid,.gameGrid{grid-template-columns:repeat(3,1fr)}.nav{display:none}.app{padding-bottom:20px}}
+
+/* Native-app visual shell */
+body{overscroll-behavior-y:none;-webkit-tap-highlight-color:transparent}
+.app{max-width:520px;background:linear-gradient(180deg,#020711,#03101e);position:relative}
+.app-logo{width:48px;height:48px;filter:drop-shadow(0 0 12px #008cff66)}
+.top{display:flex;align-items:center;gap:12px;padding:12px 16px}
+.top:before{content:none}
+.top .brand{font-size:22px;letter-spacing:3px;line-height:1}
+.top .sub{position:absolute;left:60px;top:38px;font-size:8px}
+.top:after{content:'☁';margin-left:auto;font-size:25px;color:#21cfff}
+.hero{margin:12px 14px 16px;padding:18px;border-radius:22px}
+.hero h1{font-size:23px}
+.grid{gap:10px;padding:0 14px}
+.card{min-height:112px;border-radius:19px;padding:14px}
+.nav{bottom:8px;width:calc(100% - 22px);max-width:500px;border-radius:22px}
+.nav button{font-size:10px}
+.fab{right:18px;bottom:84px;width:56px;height:56px}
+.title{font-size:23px;margin:16px 14px 11px}
+.back{margin:12px 14px 0}
+.search{margin-left:14px;width:calc(100% - 28px)}
+.photoGrid{padding:0 14px}
+
+.menuBtn{width:42px;height:42px;border:1px solid #17618e;border-radius:13px;background:#071c31;color:#eaf8ff;font-size:22px;cursor:pointer;box-shadow:0 0 14px #008cff22}
+.sideMenu{position:fixed;inset:0;z-index:80;background:#0009;backdrop-filter:blur(5px);display:none}
+.sideMenu.open{display:block}
+.menuPanel{position:absolute;top:0;left:0;width:min(86%,340px);height:100%;padding:18px 14px;background:linear-gradient(180deg,#061a2d,#020914);border-right:1px solid #17618e;box-shadow:12px 0 35px #000b;animation:menuIn .18s ease-out}
+@keyframes menuIn{from{transform:translateX(-100%)}to{transform:translateX(0)}}
+.menuHead{display:flex;align-items:center;gap:12px;padding:10px 6px 22px;border-bottom:1px solid #123f60;margin-bottom:12px}
+.menuLogo{width:48px;height:48px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(135deg,#087cff,#15b9ff);font-size:25px;font-weight:950;box-shadow:0 0 20px #008cff55}
+.menuHead b{font-size:18px;letter-spacing:2px}
+.menuClose{margin-left:auto;background:none;border:0;color:#a9d8f4;font-size:30px}
+.menuItem{width:100%;display:flex;align-items:center;gap:14px;padding:17px 13px;margin:7px 0;border:1px solid #123e60;border-radius:16px;background:#071628;color:#eaf8ff;text-align:left;font-size:15px;font-weight:800}
+.menuItem span{flex:1}.menuItem b{color:#55c8ff;font-size:20px}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script></head><body>
+<div id="splash" style="position:fixed;inset:0;z-index:100;background:radial-gradient(circle at 50% 20%,#073d70,#020711 60%);display:grid;place-items:center;text-align:center">
+  <div>
+    <svg class="app-logo" viewBox="0 0 100 100" aria-label="Aryan Personal Box logo">
+<defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#20d7ff"/><stop offset="1" stop-color="#146cff"/></linearGradient></defs>
+<rect x="4" y="4" width="92" height="92" rx="24" fill="#061528" stroke="#168cff" stroke-width="2"/>
+<path d="M27 69 49 27l25 42" fill="none" stroke="url(#lg)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M39 69 50 50l11 19" fill="none" stroke="#18cfff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M62 69h16c8 0 13-5 13-11 0-6-5-11-11-11-2-8-8-12-15-12-8 0-14 6-15 14-6 1-10 5-10 10 0 6 5 10 12 10z" fill="#061528" stroke="#20d7ff" stroke-width="4"/>
+</svg>
+    <div style="font-size:30px;font-weight:950;letter-spacing:4px;margin-top:14px;text-shadow:0 0 18px #008cff">ARYAN</div>
+    <div style="font-size:12px;font-weight:800;letter-spacing:3px;color:#20cfff;margin-top:3px">PERSONAL BOX</div>
+    <div style="font-size:11px;color:#789ab8;margin-top:20px">Your Files • Your Privacy • Always With You</div>
+    <div style="width:130px;height:4px;background:#12324d;border-radius:5px;margin:24px auto 0;overflow:hidden"><i style="display:block;width:55%;height:100%;background:#18baff;border-radius:5px"></i></div>
+  </div>
+</div>
+<div class="app">
+<section id="home" class="screen active"><header class="top">
+<button class="menuBtn" type="button" onclick="toggleMenu()" aria-label="Open menu">☰</button>
+<div><div class="brand">ARYAN</div><div class="sub">YOUR CONTENT • YOUR WORLD</div></div>
+</header>
+<div id="sideMenu" class="sideMenu" onclick="closeMenu(event)">
+  <div class="menuPanel" onclick="event.stopPropagation()">
+    <div class="menuHead">
+      <div class="menuLogo">A</div>
+      <div><b>ARYAN</b><div class="small">Personal Box</div></div>
+      <button class="menuClose" onclick="closeMenu()">×</button>
+    </div>
+    <button class="menuItem" onclick="closeMenu();show('settings')">⚙️ <span>Settings</span><b>›</b></button>
+    <button class="menuItem" onclick="closeMenu();toast('About ARYAN Personal Box')">ℹ️ <span>About App</span><b>›</b></button>
+  </div>
+</div><div class="hero"><div class="small">WELCOME BACK</div><h1>Aryan 👑</h1><p>Your personal cloud space<br>Store • Watch • Play • Enjoy</p><div class="cloud" id="cloudStatus">☁️ Checking ARYAN Cloud connection…</div></div><div class="grid" id="homeGrid"></div></section>
+<section id="files" class="screen"><button class="back" onclick="show('home')">← Home</button><div class="title">Files</div><input class="search" id="fileSearch" placeholder="🔍 Search folders..." oninput="renderFiles()"><div class="grid" id="fileGrid"></div></section>
+<section id="favorites" class="screen"><button class="back" onclick="show('home')">← Home</button><div class="title">Favorites</div><div id="favList"></div></section>
+<section id="profile" class="screen"><button class="back" onclick="show('home')">← Home</button><div class="title">Profile / Settings</div><div class="profile"><div class="avatar">👤</div><h2 style="margin:0">Aryan</h2><div class="small">Personal Box Account</div><div class="setting">👑 <span class="grow">Admin<br><span class="small">Manage your content</span></span>›</div><div class="setting">☁️ <span class="grow">Storage Usage<br><span class="small">Local storage active</span></span>›</div><div class="setting" onclick="show('settings')" style="cursor:pointer">⚙️ <span class="grow"><b>Settings</b><br><span class="small">App preferences & controls</span></span>›</div><div class="setting">❓ <span class="grow">Help & Support</span>›</div><div class="setting">ⓘ <span class="grow">About App</span>›</div></div></section>
+
+<section id="settings" class="screen">
+  <button class="back" onclick="show('profile')">← Profile</button>
+  <div class="title">Settings</div>
+  <div class="profile">
+    <div class="setting" onclick="toast('Privacy settings opened')">
+      🔐 <span class="grow"><b>Privacy & Security</b><br><span class="small">Protect your personal content</span></span>›
+    </div>
+    <div class="setting" onclick="show('cloudSettings')">
+      ☁️ <span class="grow"><b>Cloud Storage</b><br><span class="small">Supabase Cloud & sync</span></span>›
+    </div>
+    <div class="setting" onclick="toast('Local storage is active')">
+      💾 <span class="grow"><b>Storage</b><br><span class="small">Local device storage</span></span>›
+    </div>
+    <div class="setting" onclick="toast('Notifications enabled')">
+      🔔 <span class="grow"><b>Notifications</b><br><span class="small">Upload and sync alerts</span></span>›
+    </div>
+    <div class="setting" onclick="toast('Appearance settings')">
+      🎨 <span class="grow"><b>Appearance</b><br><span class="small">Dark app theme</span></span>›
+    </div>
+    <div class="setting" onclick="toast('Account settings')">
+      👤 <span class="grow"><b>Account</b><br><span class="small">Aryan Personal Box account</span></span>›
+    </div>
+    <div class="setting" onclick="toast('ARYAN Personal Box v2')">
+      ℹ️ <span class="grow"><b>About App</b><br><span class="small">Version 2 • ARYAN Personal Box</span></span>›
+    </div>
+  </div>
+</section>
+<section id="cloudSettings" class="screen">
+  <button class="back" onclick="show('settings')">← Settings</button>
+  <div class="title">Cloud Storage</div>
+  <div class="hero">
+    <div class="cloud">☁️ ARYAN CLOUD</div>
+    <h1 id="cloudSettingStatus">Checking connection…</h1>
+    <p>Keep your photos backed up and available with your cloud storage.</p>
+  </div>
+  <div class="profile">
+    <div class="setting">☁️ <span class="grow"><b>Cloud connection</b><br><span class="small" id="cloudDetail">Checking…</span></span></div>
+    <div class="setting" onclick="checkCloud();toast('Cloud check started')">🔄 <span class="grow"><b>Check Connection</b><br><span class="small">Test cloud access now</span></span>›</div>
+    <div class="setting" onclick="toast('Sync is ready')">🔁 <span class="grow"><b>Sync</b><br><span class="small">Local + cloud photo workflow</span></span>›</div>
+  </div>
+</section>
+<section id="folder" class="screen"><button class="back" onclick="show('files')">← Files</button><div class="title" id="folderTitle"></div><div style="display:flex;gap:8px;padding:0 16px 8px"><button class="action primary" type="button" onclick="addPhotos()">📸 Add Photos</button><button class="action" type="button" onclick="addLink()">＋ Link</button></div><div style="padding:0 16px 12px"><label class="action primary" style="display:block;text-align:center;cursor:pointer" for="photoInput">Select Photos from Device</label><input id="photoInput" type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/*" multiple onchange="savePhotos(this)" style="display:block;width:100%;margin-top:8px;color:#bfe8ff"></div><div id="folderContent"></div></section>
+<section id="movies" class="screen"><button class="back" onclick="show('home')">← Home</button><div class="title">Movies / Media Player</div><div class="player"><div class="cover">▶️</div><h3>ARYAN Media Player</h3><div class="small">Your movies, songs and videos</div><div class="bar"><i></i></div><div class="controls"><button>↶</button><button class="play">▶</button><button>↷</button></div></div><div class="empty">Media player structure is ready. Add your media files when the Android/cloud version is connected.</div></section>
+<section id="games" class="screen"><button class="back" onclick="show('home')">← Home</button><div class="title">Games</div><div class="gameGrid"><div class="game">🎮<b>BGMI</b><span class="small">Game shortcut</span></div><div class="game">🟩<b>GTA V</b><span class="small">Game shortcut</span></div><div class="game">⛏️<b>Minecraft</b><span class="small">Game shortcut</span></div><div class="game">⚔️<b>Clash of Clans</b><span class="small">Game shortcut</span></div></div></section>
+<div class="nav"><button data-s="home" onclick="show('home')">⌂<br>Home</button><button data-s="files" onclick="show('files')">▣<br>Files</button><button data-s="favorites" onclick="show('favorites')">♡<br>Favorites</button></div><button class="fab" onclick="quickAdd()">＋</button><div class="toast" id="toast"></div></div>
+<script>
+const KEY='ARYAN_INTERNAL_V2';
+const SUPABASE_URL='https://qsvmlmdgcfygfbbeezvu.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY='sb_publishable_7fHNuzruKxh2kvx8InMN3Q_Yba7APOH';
+const supabaseClient=(window.supabase&&window.supabase.createClient)?window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY):null;
+const CLOUD_BUCKET='Aryan';
+const DB_NAME='ARYAN_PHOTOS_DB', DB_VERSION=1, STORE='photos';
+const $=x=>document.getElementById(x);
+const defaults=[['photos','Photos','🖼️'],['all','All Photos','📸'],['ai','AI Collection','🤖'],['web','Websites / Links','🔗'],['songs','Songs','🎵'],['movies','Movies','🎬'],['games','Games','🎮']];
+let data=JSON.parse(localStorage.getItem(KEY)||'null')||{folders:defaults.map(x=>({id:x[0],name:x[1],icon:x[2],items:[]})),favs:[]};
+function save(){localStorage.setItem(KEY,JSON.stringify(data))}
+function toast(t){$('toast').textContent=t;$('toast').classList.add('show');clearTimeout(window._toast);window._toast=setTimeout(()=>$('toast').classList.remove('show'),1800)}
+function db(){return new Promise((res,rej)=>{let r=indexedDB.open(DB_NAME,DB_VERSION);r.onupgradeneeded=()=>{if(!r.result.objectStoreNames.contains(STORE))r.result.createObjectStore(STORE,{keyPath:'id'})};r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
+async function putPhoto(id,blob,name){let d=await db();return new Promise((res,rej)=>{let tx=d.transaction(STORE,'readwrite');tx.objectStore(STORE).put({id,blob,name});tx.oncomplete=()=>{d.close();res()};tx.onerror=()=>{d.close();rej(tx.error)}})}
+async function getPhoto(id){let d=await db();return new Promise((res,rej)=>{let r=d.transaction(STORE,'readonly').objectStore(STORE).get(id);r.onsuccess=()=>{d.close();res(r.result)};r.onerror=()=>{d.close();rej(r.error)}})}
+function show(id){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));$(id).classList.add('active');document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.s===id));if(id==='files')renderFiles();if(id==='home')renderHome();if(id==='favorites')renderFavs();scrollTo(0,0)}
+function card(f){return `<div class="card" onclick="openFolder('${f.id}')"><div class="icon">${f.icon}</div><div class="name">${f.name}</div><div class="count">${f.items.length} saved items</div></div>`}
+function renderHome(){let ids=['photos','web','songs','movies','games','ai','all'];$('homeGrid').innerHTML=data.folders.filter(f=>ids.includes(f.id)).map(card).join('')}
+function renderFiles(){let q=($('fileSearch').value||'').toLowerCase();$('fileGrid').innerHTML=data.folders.filter(f=>f.name.toLowerCase().includes(q)).map(card).join('')}
+function renderFavs(){let out=data.favs.map(x=>`<div class="row"><div class="icon">⭐</div><div class="grow"><b>${x.name}</b><div class="small">${x.type}</div></div></div>`).join('');$('favList').innerHTML=out||'<div class="empty">No favorites yet.</div>'}
+async function openFolder(id){let f=data.folders.find(x=>x.id===id);if(!f)return;$('folderTitle').textContent=f.icon+' '+f.name;$('folderContent').innerHTML='<div class="empty">Loading...</div>';show('folder');if(!f.items.length){$('folderContent').innerHTML='<div class="empty">This folder is empty.<br>Add photos or links.</div>';return}
+  let photoItems=f.items.filter(x=>x.type==='photo'), links=f.items.filter(x=>x.type!=='photo');let html='';
+  if(photoItems.length){html+='<div class="photoGrid">';for(const x of photoItems){try{let rec=await getPhoto(x.id);let src=rec?URL.createObjectURL(rec.blob):'';let fav=data.favs.some(v=>v.id===x.id);html+=`<div class="photo"><img src="${src}" alt=""><div>${escapeHtml(x.name)}</div><div style="display:flex;gap:6px;padding:6px"><button class="action" type="button" onclick="toggleFav('${x.id}','${escapeHtml(x.name)}','photo')">${fav?'★':'☆'}</button><button class="action" type="button" onclick="deleteItem('${f.id}','${x.id}')">Delete</button></div></div>`}catch(e){}}html+='</div>'}
+  html+=links.map(x=>`<div class="row"><div class="icon">🔗</div><div class="grow"><b>${escapeHtml(x.name)}</b><div class="small">${escapeHtml(x.url)}</div></div><button class="action" onclick="window.open('${x.url}','_blank')">Open</button><button class="action" onclick="toggleFav('${x.id||x.url}','${escapeHtml(x.name)}','link')">☆</button></div>`).join('');
+  $('folderContent').innerHTML=html||'<div class="empty">No readable items found.</div>'
+}
+function toggleFav(id,name,type){
+  const i=data.favs.findIndex(x=>x.id===id);
+  if(i>=0){data.favs.splice(i,1);toast('Removed from favorites')}
+  else{data.favs.push({id,name,type});toast('Added to favorites ★')}
+  save();renderFavs();renderHome();
+  const current=data.folders.find(f=>f.name===$('folderTitle').textContent.slice(2));
+  if(current)openFolder(current.id);
+}
+async function deleteItem(folderId,id){
+  if(!confirm('Delete this item?'))return;
+  const f=data.folders.find(x=>x.id===folderId);if(!f)return;
+  f.items=f.items.filter(x=>x.id!==id);
+  data.folders.forEach(folder=>{if(folder.id==='all')folder.items=folder.items.filter(x=>x.id!==id)});
+  data.favs=data.favs.filter(x=>x.id!==id);
+  try{let d=await db();await new Promise((res,rej)=>{let tx=d.transaction(STORE,'readwrite');tx.objectStore(STORE).delete(id);tx.oncomplete=res;tx.onerror=()=>rej(tx.error)});d.close()}catch(e){}
+  save();toast('Deleted ✓');openFolder(folderId);renderHome();renderFiles();renderFavs();
+}
+function escapeHtml(v){return String(v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
+function addPhotos(){let input=$('photoInput');try{input.value=''}catch(e){};input.click()}
+async function uploadToCloud(file,path){
+  if(!supabaseClient) throw new Error('Supabase library unavailable');
+  const {error}=await supabaseClient.storage.from(CLOUD_BUCKET).upload(path,file,{upsert:false,contentType:file.type||'image/jpeg'});
+  if(error) throw error;
+  return true;
+}
+async function checkCloud(){
+  const el=$('cloudStatus'), se=$('cloudSettingStatus'), de=$('cloudDetail');
+  if(!supabaseClient){el.textContent='☁️ Cloud library unavailable';if(se)se.textContent='Cloud unavailable';if(de)de.textContent='Supabase library unavailable';return false}
+  try{const {error}=await supabaseClient.storage.from(CLOUD_BUCKET).list('',{limit:1});if(error)throw error;el.textContent='☁️ ARYAN Cloud connected ✓';if(se)se.textContent='Connected ✓';if(de)de.textContent='Cloud storage is reachable';return true}
+  catch(e){console.warn('CLOUD_CHECK',e);el.textContent='☁️ Cloud configured • storage permission needs checking';if(se)se.textContent='Permission needs checking';if(de)de.textContent='Cloud is configured but access needs checking';return false}
+}
+async function savePhotos(input){
+  const picked=Array.from(input&&input.files?input.files:[]);
+  const files=picked.filter(f=>f&&(f.type||'').toLowerCase().startsWith('image/'));
+  if(!files.length){toast('No photo selected');return}
+  const idFolder=$('folderTitle').textContent;
+  const f=data.folders.find(x=>x.name===idFolder.slice(idFolder.indexOf(' ')+1));
+  if(!f){toast('Open a folder first');return}
+  const all=data.folders.find(x=>x.id==='all'); let added=0;
+  try{for(const file of files){
+    const id='p_'+Date.now()+'_'+Math.random().toString(36).slice(2);
+    await putPhoto(id,file,file.name||'Photo');
+    const safeName=(file.name||'photo.jpg').replace(/[^a-zA-Z0-9._-]/g,'_');
+    let cloudUploaded=false;
+    try{await uploadToCloud(file,'photos/'+Date.now()+'_'+Math.random().toString(36).slice(2)+'_'+safeName);cloudUploaded=true}catch(e){console.warn('CLOUD_UPLOAD',e)}
+    f.items.push({type:'photo',id,name:file.name||'Photo',cloud:cloudUploaded});
+    if(f.id!=='all'&&all)all.items.push({type:'photo',id,name:file.name||'Photo'}); added++;
+  } save(); toast(added+' photo(s) added ✓'); await openFolder(f.id); renderHome(); renderFiles();
+  }catch(e){console.error(e);toast('Could not save photo. Try Chrome.')}
+  try{input.value=''}catch(e){}
+}
+function addLink(){let f=data.folders.find(x=>x.name===$('folderTitle').textContent.slice(2));if(!f)return;let n=prompt('Website name');if(!n)return;let u=prompt('Website link','https://');if(!u)return;if(!/^https?:\/\//i.test(u))u='https://'+u;f.items.push({type:'link',name:n,url:u});save();openFolder(f.id);renderHome();renderFiles()}
+function quickAdd(){show('files');toast('Choose a folder to add content')}
+function toggleMenu(){$('sideMenu').classList.toggle('open')}
+function closeMenu(e){if(!e||e.target===$('sideMenu'))$('sideMenu').classList.remove('open')}
+renderHome();show('home');save();checkCloud();setTimeout(()=>{$('splash').style.display='none'},1200);
+</script></body></html>
