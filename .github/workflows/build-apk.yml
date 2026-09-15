@@ -1,39 +1,158 @@
-name: Build APK
+package com.aryan.personalbox
 
-on:
-  workflow_dispatch:
-  push:
-    branches:
-      - main
+import android.app.Activity
+import android.os.Bundle
+import android.webkit.WebChromeClient
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import android.webkit.ValueCallback
+import android.webkit.WebChromeClient.FileChooserParams
+import android.net.Uri
+import android.content.Intent
+import android.view.ViewGroup
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+class MainActivity : Activity() {
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+    private lateinit var webView: WebView
+    private var fileCallback: ValueCallback<Array<Uri>>? = null
 
-      - name: Setup JDK
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '17'
+    companion object {
+        private const val FILE_CHOOSER_REQUEST = 1001
+    }
 
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: '8.7'
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-      - name: Extract Android Project
-        run: unzip -o FinalApp.zip
+        webView = WebView(this)
 
-      - name: Build APK
-        working-directory: FinalApp
-        run: gradle assembleDebug
+        webView.layoutParams = ViewGroup.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT
+        )
 
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-debug
-          path: FinalApp/app/build/outputs/apk/debug/app-debug.apk
+        webView.settings.apply {
+            javaScriptEnabled = true
+            domStorageEnabled = true
+            databaseEnabled = true
+            allowFileAccess = true
+            allowContentAccess = true
+            mediaPlaybackRequiresUserGesture = false
+        }
+
+        webView.webViewClient = WebViewClient()
+
+        webView.webChromeClient = object : WebChromeClient() {
+
+            override fun onShowFileChooser(
+                view: WebView?,
+                callback: ValueCallback<Array<Uri>>?,
+                params: FileChooserParams?
+            ): Boolean {
+
+                fileCallback?.onReceiveValue(null)
+                fileCallback = callback
+
+                return try {
+
+                    val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                        addCategory(Intent.CATEGORY_OPENABLE)
+
+                        // Photos only
+                        type = "image/*"
+
+                        // Allow multiple photos
+                        putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+
+                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION)
+                    }
+
+                    startActivityForResult(
+                        intent,
+                        FILE_CHOOSER_REQUEST
+                    )
+
+                    true
+
+                } catch (e: Exception) {
+
+                    fileCallback?.onReceiveValue(null)
+                    fileCallback = null
+                    false
+                }
+            }
+        }
+
+        setContentView(webView)
+
+        webView.loadUrl("file:///android_asset/index.html")
+    }
+
+    @Deprecated("Deprecated in Android API")
+    override fun onActivityResult(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?
+    ) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode != FILE_CHOOSER_REQUEST) return
+
+        val callback = fileCallback
+        fileCallback = null
+
+        if (callback == null) return
+
+        if (resultCode != RESULT_OK || data == null) {
+            callback.onReceiveValue(null)
+            return
+        }
+
+        try {
+
+            val uriList = ArrayList<Uri>()
+
+            // Multiple photos
+            data.clipData?.let { clipData ->
+
+                for (i in 0 until clipData.itemCount) {
+                    val uri = clipData.getItemAt(i).uri
+                    uriList.add(uri)
+                }
+            }
+
+            // Single photo
+            if (uriList.isEmpty()) {
+                data.data?.let { uri ->
+                    uriList.add(uri)
+                }
+            }
+
+            callback.onReceiveValue(uriList.toTypedArray())
+
+        } catch (e: Exception) {
+
+            callback.onReceiveValue(null)
+        }
+    }
+
+    override fun onDestroy() {
+
+        fileCallback?.onReceiveValue(null)
+        fileCallback = null
+
+        webView.destroy()
+
+        super.onDestroy()
+    }
+
+    @Deprecated("Deprecated in Android API")
+    override fun onBackPressed() {
+
+        if (webView.canGoBack()) {
+            webView.goBack()
+        } else {
+            super.onBackPressed()
+        }
+    }
+}
