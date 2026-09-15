@@ -21,10 +21,11 @@ jobs:
           java-version: '17'
 
       - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+        uses: android-actions/setup-android@v4
 
       - name: Install Android SDK
         run: |
+          yes | sdkmanager --licenses || true
           sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
 
       - name: Check project files
@@ -32,7 +33,7 @@ jobs:
           echo "=== Project files ==="
           ls -la
           echo "=== Gradle files ==="
-          find . -maxdepth 2 -type f | sort
+          find . -maxdepth 3 -type f | sort
 
       - name: Create Gradle wrapper
         run: |
@@ -47,5 +48,5 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: ARYAN-Personal-Box-APK
+          name: APK
           path: "**/build/outputs/apk/debug/*.apk"
