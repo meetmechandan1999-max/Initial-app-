@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -20,40 +21,41 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Find Android project
+      - name: Extract Fixed Android Project
         shell: bash
         run: |
           set -e
 
-          echo "Repository files:"
-          ls -la
-
-          ZIP=$(find . -maxdepth 1 -type f -name "*.zip" | head -n 1)
-
-          if [ -z "$ZIP" ]; then
-            echo "ERROR: No ZIP file found"
-            exit 1
-          fi
-
-          echo "Using: $ZIP"
-
           rm -rf extracted
           mkdir extracted
-          unzip -q "$ZIP" -d extracted
 
-          PROJECT=$(find extracted -name gradlew -type f -print -quit)
+          unzip -q FinalApp_AddPhoto_FIXED.zip -d extracted
 
-          if [ -z "$PROJECT" ]; then
-            echo "ERROR: gradlew not found"
-            find extracted -maxdepth 5 -type f
+          echo "Extracted project:"
+          find extracted -maxdepth 4 -type f | head -100
+
+      - name: Locate Android Project
+        shell: bash
+        run: |
+          set -e
+
+          PROJECT_DIR="extracted"
+
+          if [ ! -f "$PROJECT_DIR/settings.gradle" ]; then
+            echo "ERROR: settings.gradle not found"
+            find extracted -maxdepth 4 -type f
             exit 1
           fi
 
-          PROJECT_DIR=$(dirname "$PROJECT")
+          if [ ! -d "$PROJECT_DIR/app" ]; then
+            echo "ERROR: app folder not found"
+            find extracted -maxdepth 4 -type d
+            exit 1
+          fi
 
           echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
 
-          echo "Project:"
+          echo "Android project found:"
           echo "$PROJECT_DIR"
 
       - name: Setup Android SDK
@@ -61,29 +63,21 @@ jobs:
         run: |
           set -e
 
-          export ANDROID_HOME="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
-          export ANDROID_SDK_ROOT="$ANDROID_HOME"
+          export ANDROID_HOME=/usr/local/lib/android/sdk
+          export ANDROID_SDK_ROOT=$ANDROID_HOME
 
-          echo "ANDROID_HOME=$ANDROID_HOME"
-
-          if [ -x "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" ]; then
-            SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
-          elif [ -x "$ANDROID_HOME/cmdline-tools/16.0/bin/sdkmanager" ]; then
-            SDKMANAGER="$ANDROID_HOME/cmdline-tools/16.0/bin/sdkmanager"
-          else
-            SDKMANAGER=$(find "$ANDROID_HOME" -type f -name sdkmanager -print -quit)
-          fi
+          SDKMANAGER=$(find "$ANDROID_HOME" \
+            -type f \
+            -name sdkmanager \
+            -print -quit)
 
           if [ -z "$SDKMANAGER" ]; then
             echo "ERROR: sdkmanager not found"
-            find "$ANDROID_HOME" -maxdepth 5 -type f -name sdkmanager || true
             exit 1
           fi
 
-          echo "SDKMANAGER=$SDKMANAGER"
-
-          echo "$ANDROID_HOME/platform-tools" >> "$GITHUB_PATH"
-          echo "$(dirname "$SDKMANAGER")" >> "$GITHUB_PATH"
+          echo "Using SDK manager:"
+          echo "$SDKMANAGER"
 
           yes | "$SDKMANAGER" --licenses || true
 
@@ -92,6 +86,18 @@ jobs:
             "platforms;android-35" \
             "build-tools;35.0.0"
 
+      - name: Install Gradle 8.7
+        shell: bash
+        run: |
+          set -e
+
+          wget -q \
+            https://services.gradle.org/distributions/gradle-8.7-bin.zip
+
+          unzip -q gradle-8.7-bin.zip -d "$HOME"
+
+          echo "$HOME/gradle-8.7/bin" >> "$GITHUB_PATH"
+
       - name: Build APK
         shell: bash
         run: |
@@ -99,19 +105,23 @@ jobs:
 
           cd "$PROJECT_DIR"
 
-          chmod +x gradlew
+          gradle --version
 
-          ./gradlew clean assembleDebug --no-daemon
+          gradle assembleDebug --no-daemon
 
       - name: Find APK
         shell: bash
         run: |
           set -e
 
-          APK=$(find "$PROJECT_DIR" -type f -name "*.apk" -print -quit)
+          APK=$(find "$PROJECT_DIR" \
+            -type f \
+            -name "*.apk" \
+            -print -quit)
 
           if [ -z "$APK" ]; then
-            echo "ERROR: APK not generated"
+            echo "ERROR: APK was not generated"
+            find "$PROJECT_DIR" -type f | head -200
             exit 1
           fi
 
@@ -125,4 +135,4 @@ jobs:
         with:
           name: Aryan-App-Final
           path: Aryan-App-Final.apk
-          if-no-files-found: error
+          if-no-files-found: errorp
