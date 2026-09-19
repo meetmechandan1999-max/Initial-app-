@@ -20,11 +20,11 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Extract fixed project
+      - name: Extract Cloud Upload project
         run: |
           rm -rf extracted
           mkdir extracted
-          unzip -o FinalApp_AddPhoto_FIXED.zip -d extracted
+          unzip -o FinalApp_CloudUpload_FIXED.zip -d extracted
 
       - name: Setup Android SDK
         run: |
@@ -33,6 +33,7 @@ jobs:
           export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH
 
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
+
           $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager \
             "platform-tools" \
             "platforms;android-35" \
@@ -52,5 +53,5 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: Aryan-App-Fixed
+          name: Aryan-App-Cloud-Fixed
           path: extracted/app/build/outputs/apk/debug/app-debug.apk
