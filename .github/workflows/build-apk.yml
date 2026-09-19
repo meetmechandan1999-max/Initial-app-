@@ -135,4 +135,4 @@ jobs:
         with:
           name: Aryan-App-Final
           path: Aryan-App-Final.apk
-          if-no-files-found: errorp
+          if-no-files-found: error
