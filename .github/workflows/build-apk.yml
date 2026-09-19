@@ -46,4 +46,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Aryan-app-APK
-          path: FinalApp/app/build
+          path: FinalApp/app/build/outputs/apk/debug/app-debug.apk
