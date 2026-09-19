@@ -21,32 +21,29 @@ jobs:
           java-version: '17'
 
       - name: Setup Android SDK
-        uses: android-actions/setup-android@v4
+        uses: android-actions/setup-android@v3
 
-      - name: Install Android SDK
-        run: |
-          yes | sdkmanager --licenses || true
-          sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
 
-      - name: Check project files
+      - name: Extract Project
         run: |
-          echo "=== Project files ==="
+          unzip -o FinalApp.zip
           ls -la
-          echo "=== Gradle files ==="
-          find . -maxdepth 3 -type f | sort
+          ls -la FinalApp
 
-      - name: Create Gradle wrapper
-        run: |
-          gradle wrapper --gradle-version 8.7
-
-      - name: Make gradlew executable
+      - name: Make Gradlew Executable
+        working-directory: FinalApp
         run: chmod +x gradlew
 
-      - name: Build APK
+      - name: Build Debug APK
+        working-directory: FinalApp
         run: ./gradlew assembleDebug --stacktrace
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: APK
-          path: "**/build/outputs/apk/debug/*.apk"
+          name: Aryan-app-APK
+          path: FinalApp/app/build
