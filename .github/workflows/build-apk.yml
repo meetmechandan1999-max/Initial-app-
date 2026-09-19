@@ -11,7 +11,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -21,25 +20,70 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Fix Android SDK PATH
+      - name: Find Android project
         shell: bash
         run: |
-          echo "$ANDROID_HOME/cmdline-tools/latest/bin" >> "$GITHUB_PATH"
-          echo "$ANDROID_HOME/platform-tools" >> "$GITHUB_PATH"
+          set -e
 
-      - name: Install Android SDK packages
-        shell: bash
-        run: |
-          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          echo "Repository files:"
+          ls -la
 
-          if [ ! -f "$SDKMANAGER" ]; then
-            echo "sdkmanager not found"
-            find "$ANDROID_HOME" -name sdkmanager -type f 2>/dev/null || true
+          ZIP=$(find . -maxdepth 1 -type f -name "*.zip" | head -n 1)
+
+          if [ -z "$ZIP" ]; then
+            echo "ERROR: No ZIP file found"
             exit 1
           fi
+
+          echo "Using: $ZIP"
+
+          rm -rf extracted
+          mkdir extracted
+          unzip -q "$ZIP" -d extracted
+
+          PROJECT=$(find extracted -name gradlew -type f -print -quit)
+
+          if [ -z "$PROJECT" ]; then
+            echo "ERROR: gradlew not found"
+            find extracted -maxdepth 5 -type f
+            exit 1
+          fi
+
+          PROJECT_DIR=$(dirname "$PROJECT")
+
+          echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
+
+          echo "Project:"
+          echo "$PROJECT_DIR"
+
+      - name: Setup Android SDK
+        shell: bash
+        run: |
+          set -e
+
+          export ANDROID_HOME="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
+          export ANDROID_SDK_ROOT="$ANDROID_HOME"
+
+          echo "ANDROID_HOME=$ANDROID_HOME"
+
+          if [ -x "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" ]; then
+            SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          elif [ -x "$ANDROID_HOME/cmdline-tools/16.0/bin/sdkmanager" ]; then
+            SDKMANAGER="$ANDROID_HOME/cmdline-tools/16.0/bin/sdkmanager"
+          else
+            SDKMANAGER=$(find "$ANDROID_HOME" -type f -name sdkmanager -print -quit)
+          fi
+
+          if [ -z "$SDKMANAGER" ]; then
+            echo "ERROR: sdkmanager not found"
+            find "$ANDROID_HOME" -maxdepth 5 -type f -name sdkmanager || true
+            exit 1
+          fi
+
+          echo "SDKMANAGER=$SDKMANAGER"
+
+          echo "$ANDROID_HOME/platform-tools" >> "$GITHUB_PATH"
+          echo "$(dirname "$SDKMANAGER")" >> "$GITHUB_PATH"
 
           yes | "$SDKMANAGER" --licenses || true
 
@@ -48,78 +92,37 @@ jobs:
             "platforms;android-35" \
             "build-tools;35.0.0"
 
-      - name: Find project ZIP
-        shell: bash
-        run: |
-          echo "ZIP files in repository:"
-          find . -maxdepth 3 -type f -iname "*.zip" -print
-
-          ZIP_FILE=$(find . -maxdepth 3 -type f -iname "*.zip" | head -n 1)
-
-          if [ -z "$ZIP_FILE" ]; then
-            echo "ERROR: No project ZIP found"
-            exit 1
-          fi
-
-          echo "Using ZIP: $ZIP_FILE"
-          echo "ZIP_FILE=$ZIP_FILE" >> "$GITHUB_ENV"
-
-      - name: Extract Android project
-        shell: bash
-        run: |
-          rm -rf extracted
-          mkdir extracted
-
-          unzip -o "$ZIP_FILE" -d extracted
-
-          echo "Extracted files:"
-          find extracted -maxdepth 4 -type f | head -100
-
-      - name: Find Android project
-        shell: bash
-        run: |
-          GRADLEW=$(find extracted -type f -name "gradlew" | head -n 1)
-
-          if [ -z "$GRADLEW" ]; then
-            echo "ERROR: gradlew not found in ZIP"
-            find extracted -maxdepth 5 -type f | head -200
-            exit 1
-          fi
-
-          PROJECT_DIR=$(dirname "$GRADLEW")
-
-          echo "Project directory:"
-          echo "$PROJECT_DIR"
-
-          echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
-
-      - name: Make Gradle executable
-        shell: bash
-        run: |
-          chmod +x "$PROJECT_DIR/gradlew"
-
-      - name: Accept Android licenses
-        shell: bash
-        run: |
-          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses || true
-
       - name: Build APK
         shell: bash
         run: |
+          set -e
+
           cd "$PROJECT_DIR"
 
-          ./gradlew clean assembleDebug --no-daemon --stacktrace
+          chmod +x gradlew
+
+          ./gradlew clean assembleDebug --no-daemon
 
       - name: Find APK
         shell: bash
         run: |
-          echo "APK files:"
-          find "$PROJECT_DIR" -type f -name "*.apk" -print
+          set -e
+
+          APK=$(find "$PROJECT_DIR" -type f -name "*.apk" -print -quit)
+
+          if [ -z "$APK" ]; then
+            echo "ERROR: APK not generated"
+            exit 1
+          fi
+
+          echo "APK found:"
+          echo "$APK"
+
+          cp "$APK" "$GITHUB_WORKSPACE/Aryan-App-Final.apk"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: Aryan-App-APK
-          path: |
-            **/build/outputs/apk/debug/*.apk
+          name: Aryan-App-Final
+          path: Aryan-App-Final.apk
           if-no-files-found: error
