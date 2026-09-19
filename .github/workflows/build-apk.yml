@@ -25,7 +25,7 @@ jobs:
         with:
           packages: 'platform-tools'
 
-      - name: Setup Gradle
+      - name: Setup Gradle 8.7
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.7'
@@ -33,19 +33,72 @@ jobs:
       - name: Extract Project
         run: |
           unzip -o FinalApp.zip
-          ls -la
-          ls -la FinalApp
+          echo "===== Extracted files ====="
+          find . -maxdepth 4 -type f | head -200
 
-      - name: Make Gradlew Executable
-        working-directory: FinalApp
-        run: chmod +x gradlew
+      - name: Find Android Project
+        id: project
+        shell: bash
+        run: |
+          PROJECT_DIR=""
 
-      - name: Build Debug APK
-        working-directory: FinalApp
-        run: ./gradlew assembleDebug --stacktrace
+          SETTINGS_FILE=$(find . -type f \( \
+            -name "settings.gradle" \
+            -o -name "settings.gradle.kts" \
+          \) -print -quit)
+
+          if [ -n "$SETTINGS_FILE" ]; then
+            PROJECT_DIR=$(dirname "$SETTINGS_FILE")
+          fi
+
+          if [ -z "$PROJECT_DIR" ]; then
+            echo "ERROR: Android project root not found."
+            echo "Searching for Gradle files..."
+            find . -type f \( \
+              -name "build.gradle" \
+              -o -name "build.gradle.kts" \
+            \) -print
+            exit 1
+          fi
+
+          PROJECT_DIR=$(cd "$PROJECT_DIR" && pwd)
+
+          echo "Android project found at:"
+          echo "$PROJECT_DIR"
+
+          echo "project_dir=$PROJECT_DIR" >> "$GITHUB_OUTPUT"
+
+      - name: Build APK
+        run: |
+          echo "Building project:"
+          echo "${{ steps.project.outputs.project_dir }}"
+
+          gradle \
+            -p "${{ steps.project.outputs.project_dir }}" \
+            assembleDebug \
+            --stacktrace
+
+      - name: Find APK
+        id: apk
+        shell: bash
+        run: |
+          APK=$(find "${{ steps.project.outputs.project_dir }}" \
+            -type f \
+            -name "app-debug.apk" \
+            -print -quit)
+
+          if [ -z "$APK" ]; then
+            echo "ERROR: app-debug.apk was not created."
+            exit 1
+          fi
+
+          echo "APK found:"
+          echo "$APK"
+
+          echo "apk_path=$APK" >> "$GITHUB_OUTPUT"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: Aryan-app-APK
-          path: FinalApp/app/build/outputs/apk/debug/app-debug.apk
+          path: ${{ steps.apk.outputs.apk_path }}
