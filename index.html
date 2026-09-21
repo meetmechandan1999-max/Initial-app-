@@ -7,18 +7,21 @@
 
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
+
 body{
   font-family:Arial,sans-serif;
   background:linear-gradient(135deg,#101828,#182848);
   color:white;
   min-height:100vh;
 }
+
 header{
   padding:25px 20px;
   text-align:center;
   background:rgba(255,255,255,.08);
   backdrop-filter:blur(10px);
 }
+
 header h1{font-size:30px}
 header p{opacity:.7;margin-top:6px}
 
@@ -49,7 +52,10 @@ input,textarea{
   outline:none;
 }
 
-textarea{height:130px;resize:vertical}
+textarea{
+  height:130px;
+  resize:vertical;
+}
 
 button{
   border:0;
@@ -61,9 +67,20 @@ button{
   cursor:pointer;
 }
 
-.save{background:#22c55e;color:white}
-.delete{background:#ef4444;color:white}
-.blue{background:#3b82f6;color:white}
+.save{
+  background:#22c55e;
+  color:white;
+}
+
+.delete{
+  background:#ef4444;
+  color:white;
+}
+
+.blue{
+  background:#3b82f6;
+  color:white;
+}
 
 .note{
   background:rgba(0,0,0,.2);
@@ -85,6 +102,11 @@ button{
   margin:15px;
   color:#86efac;
 }
+
+#fileStatus{
+  margin-top:10px;
+  line-height:1.5;
+}
 </style>
 </head>
 
@@ -101,127 +123,303 @@ button{
     <h2>📝 My Notes</h2>
 
     <input id="noteTitle" placeholder="Note title">
-    <textarea id="noteText" placeholder="Write your note here..."></textarea>
 
-    <button class="save" onclick="saveNote()">💾 Save Note</button>
-    <button class="delete" onclick="clearNote()">🗑️ Clear</button>
+    <textarea
+      id="noteText"
+      placeholder="Write your note here..."
+    ></textarea>
+
+    <button class="save" onclick="saveNote()">
+      💾 Save Note
+    </button>
+
+    <button class="delete" onclick="clearNote()">
+      🗑️ Clear
+    </button>
 
     <div id="savedNote"></div>
   </div>
+
 
   <div class="card">
     <h2>📁 My Files</h2>
 
     <div class="fileBox">
-      <input type="file" id="fileInput">
-      <button class="blue" onclick="saveFile()">📤 Save File</button>
+
+      <input
+        type="file"
+        id="fileInput"
+        accept="image/*"
+      >
+
+      <button
+        class="blue"
+        onclick="uploadFile()"
+      >
+        ☁️ Upload to Cloud
+      </button>
+
       <p id="fileStatus"></p>
+
     </div>
   </div>
 
+
   <div class="card">
     <h2>🔐 Quick Access</h2>
-    <button class="blue" onclick="showMessage('Welcome back, Aryan! 👋')">
+
+    <button
+      class="blue"
+      onclick="showMessage('Welcome back, Aryan! 👋')"
+    >
       👋 Welcome
     </button>
-    <button class="blue" onclick="showMessage('Your app is working perfectly! ✅')">
+
+    <button
+      class="blue"
+      onclick="showMessage('Your app is working perfectly! ✅')"
+    >
       ⚙️ App Status
     </button>
   </div>
+
 
   <div id="status"></div>
 
 </div>
 
+
 <script>
+
+/* =========================
+   SUPABASE CONFIG
+   ========================= */
+
+const SUPABASE_URL =
+  "https://qsvmlmdgcfygfbbeezvu.supabase.co";
+
+const SUPABASE_KEY =
+  "sb_publishable_7fHNuzruKxh2kvx8InMN3Q_Yba7APOH";
+
+const BUCKET_NAME = "Aryan";
+
+
+/* =========================
+   NOTES
+   ========================= */
 
 function saveNote(){
 
-  const title=document.getElementById("noteTitle").value;
-  const text=document.getElementById("noteText").value;
+  const title =
+    document.getElementById("noteTitle").value;
+
+  const text =
+    document.getElementById("noteText").value;
 
   if(!title && !text){
     alert("Please write something first.");
     return;
   }
 
-  localStorage.setItem("aryan_title",title);
-  localStorage.setItem("aryan_note",text);
+  localStorage.setItem("aryan_title", title);
+  localStorage.setItem("aryan_note", text);
 
   displayNote();
+
   showMessage("Note saved successfully ✅");
 }
 
+
 function displayNote(){
 
-  const title=localStorage.getItem("aryan_title");
-  const text=localStorage.getItem("aryan_note");
+  const title =
+    localStorage.getItem("aryan_title");
+
+  const text =
+    localStorage.getItem("aryan_note");
 
   if(title || text){
 
-    document.getElementById("savedNote").innerHTML=
+    document.getElementById("savedNote").innerHTML =
     `<div class="note">
-      <b>${escapeHTML(title || "My Note")}</b><br><br>
+      <b>${escapeHTML(title || "My Note")}</b>
+      <br><br>
       ${escapeHTML(text || "")}
     </div>`;
   }
 }
+
 
 function clearNote(){
 
   localStorage.removeItem("aryan_title");
   localStorage.removeItem("aryan_note");
 
-  document.getElementById("noteTitle").value="";
-  document.getElementById("noteText").value="";
-  document.getElementById("savedNote").innerHTML="";
+  document.getElementById("noteTitle").value = "";
+  document.getElementById("noteText").value = "";
+  document.getElementById("savedNote").innerHTML = "";
 
   showMessage("Note cleared 🗑️");
 }
 
-function saveFile(){
 
-  const file=document.getElementById("fileInput").files[0];
+/* =========================
+   SUPABASE PHOTO UPLOAD
+   ========================= */
+
+async function uploadFile(){
+
+  const input =
+    document.getElementById("fileInput");
+
+  const status =
+    document.getElementById("fileStatus");
+
+  const file =
+    input.files[0];
 
   if(!file){
-    alert("Please select a file first.");
+    alert("Please select a photo first.");
     return;
   }
 
-  localStorage.setItem("aryan_file_name",file.name);
+  status.innerText = "⏳ Uploading to cloud...";
 
-  document.getElementById("fileStatus").innerHTML=
-  "✅ Selected: "+escapeHTML(file.name);
+  try{
 
-  showMessage("File selected successfully 📁");
+    const safeName =
+      file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+
+    const filePath =
+      "photos/" +
+      Date.now() +
+      "_" +
+      safeName;
+
+    const uploadURL =
+      SUPABASE_URL +
+      "/storage/v1/object/" +
+      encodeURIComponent(BUCKET_NAME) +
+      "/" +
+      filePath
+        .split("/")
+        .map(encodeURIComponent)
+        .join("/");
+
+
+    const response =
+      await fetch(uploadURL, {
+
+        method: "POST",
+
+        headers: {
+          "apikey": SUPABASE_KEY,
+          "Authorization":
+            "Bearer " + SUPABASE_KEY,
+          "Content-Type":
+            file.type || "application/octet-stream",
+          "x-upsert": "false"
+        },
+
+        body: file
+      });
+
+
+    const result =
+      await response.text();
+
+
+    if(!response.ok){
+
+      console.error(result);
+
+      throw new Error(
+        "Upload failed: " +
+        response.status +
+        " " +
+        result
+      );
+    }
+
+
+    status.innerHTML =
+      "✅ Photo uploaded successfully ☁️<br>" +
+      escapeHTML(file.name);
+
+    showMessage(
+      "Photo saved to Aryan cloud ✅"
+    );
+
+
+    input.value = "";
+
+
+  }catch(error){
+
+    console.error(error);
+
+    status.innerText =
+      "❌ Upload failed: " +
+      error.message;
+
+    showMessage(
+      "Cloud upload failed ❌"
+    );
+  }
 }
+
+
+/* =========================
+   MESSAGE
+   ========================= */
 
 function showMessage(message){
 
-  document.getElementById("status").innerText=message;
+  document.getElementById("status").innerText =
+    message;
 
   setTimeout(()=>{
-    document.getElementById("status").innerText="";
+
+    document.getElementById("status").innerText = "";
+
   },2500);
 }
+
+
+/* =========================
+   SECURITY
+   ========================= */
 
 function escapeHTML(str){
 
   return String(str)
-  .replace(/&/g,"&amp;")
-  .replace(/</g,"&lt;")
-  .replace(/>/g,"&gt;")
-  .replace(/"/g,"&quot;")
-  .replace(/'/g,"&#039;");
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
 }
 
-window.onload=function(){
 
-  const title=localStorage.getItem("aryan_title");
-  const note=localStorage.getItem("aryan_note");
+/* =========================
+   LOAD NOTES
+   ========================= */
 
-  if(title) document.getElementById("noteTitle").value=title;
-  if(note) document.getElementById("noteText").value=note;
+window.onload = function(){
+
+  const title =
+    localStorage.getItem("aryan_title");
+
+  const note =
+    localStorage.getItem("aryan_note");
+
+  if(title)
+    document.getElementById("noteTitle").value =
+      title;
+
+  if(note)
+    document.getElementById("noteText").value =
+      note;
 
   displayNote();
 };
@@ -229,4 +427,4 @@ window.onload=function(){
 </script>
 
 </body>
-  </html>
+</html>
