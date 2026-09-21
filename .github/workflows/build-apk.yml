@@ -31,16 +31,26 @@ jobs:
         with:
           gradle-version: '8.7'
 
-      - name: Check Android Project
+      - name: Extract Android Project
         run: |
-          echo "Current directory:"
-          pwd
-          echo "Files:"
-          ls -la
-          echo "App folder:"
-          ls -la app
+          unzip -o FinalApp_AddPhoto_FIXED.zip -d extracted
+          echo "Extracted project:"
+          find extracted -maxdepth 3 -type f | head -100
+
+      - name: Find Android Project
+        run: |
+          if [ -f "extracted/FinalApp/settings.gradle" ]; then
+            echo "PROJECT_DIR=extracted/FinalApp" >> "$GITHUB_ENV"
+          elif [ -f "extracted/settings.gradle" ]; then
+            echo "PROJECT_DIR=extracted" >> "$GITHUB_ENV"
+          else
+            echo "ERROR: settings.gradle not found"
+            find extracted -maxdepth 4 -type f
+            exit 1
+          fi
 
       - name: Build APK
+        working-directory: ${{ env.PROJECT_DIR }}
         run: |
           gradle assembleDebug --no-daemon
 
@@ -48,5 +58,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Aryan-App-debug
-          path: app/build/outputs/apk/debug/app-debug.apk
+          path: ${{ env.PROJECT_DIR }}/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
