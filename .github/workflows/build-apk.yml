@@ -31,33 +31,22 @@ jobs:
         with:
           gradle-version: '8.7'
 
-      - name: Extract FinalApp Cloud Fixed ZIP
+      - name: Check Android Project
         run: |
-          unzip -o FinalApp-CLOUD-FIXED.zip -d extracted
-          echo "Extracted files:"
-          find extracted -maxdepth 3 -type f | head -100
-
-      - name: Find Android project
-        run: |
-          if [ -f "extracted/FinalApp/settings.gradle" ]; then
-            echo "PROJECT_DIR=extracted/FinalApp" >> "$GITHUB_ENV"
-          elif [ -f "extracted/settings.gradle" ]; then
-            echo "PROJECT_DIR=extracted" >> "$GITHUB_ENV"
-          else
-            echo "Android project not found"
-            find extracted -maxdepth 4 -type f
-            exit 1
-          fi
+          echo "Current directory:"
+          pwd
+          echo "Files:"
+          ls -la
+          echo "App folder:"
+          ls -la app
 
       - name: Build APK
-        working-directory: ${{ env.PROJECT_DIR }}
         run: |
-          gradle --version
           gradle assembleDebug --no-daemon
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: Aryan-App-debug
-          path: ${{ env.PROJECT_DIR }}/app/build/outputs/apk/debug/app-debug.apk
+          path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
